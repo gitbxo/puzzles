@@ -55,7 +55,7 @@ def solve_knapsack(items, capacity):
 
 
 def print_knapsack(sack):
-  return f'value = {sack[1]}, items = ' + str([i[0] for i in sack[0]])
+  return f'value = {sack[1][0]}, items = ' + str([i[0] for i in sack[0]])
 
 
 
@@ -66,5 +66,33 @@ if __name__ == '__main__':
     [('A', 1, 1), ('B', 6, 2), ('C', 10, 3), ('D', 16, 5)], (6,))))
   print(print_knapsack(solve_knapsack(
     [('A', 1, 1, 3), ('B', 6, 2, 2), ('C', 10, 3, 5), ('D', 16, 5, 4)], (7,7))))
+
+  print(print_knapsack(solve_knapsack(
+    [('A', 2, 1, 20),
+     ('B', 2, 1, 25),
+     ('C', 3, 2, 30),
+     ('D', 2, 3, 35),
+     ('E', 5, 3, 40),
+     ('F', 6, 3, 40),
+     ('G', 2, 3, 45),
+     ('H', 5, 3, 45),
+     ('I', 7, 4, 50)],
+    (20, 245)
+    )))
+
+
+
+  print(print_knapsack(solve_knapsack(
+    [('A', 2, 1, 20),
+     ('B', 2, 1, 25),
+     ('C', 3, 2, 30),
+     ('D', 2, 3, 35),
+     ('E', 5, 3, 40),
+     ('F', 6, 3, 40),
+     ('G', 2, 3, 45),
+     ('H', 5, 3, 45),
+     ('I', 7, 4, 50)],
+    (20, 245)
+    )))
 
 
