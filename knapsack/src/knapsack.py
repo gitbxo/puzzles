@@ -1,5 +1,10 @@
 '''
 Knapsack problem
+
+This solves the multi-dimensional knapsack problem
+
+To run, use the following command:
+  python3 knapsack.py
 '''
 
 def check_fit(item, remaining):
@@ -10,6 +15,15 @@ def check_fit(item, remaining):
 
 
 def solve_knapsack(items, capacity):
+  '''solve_knapsack
+
+     items is a list of tuples containing: name, value, w1, w2, ...
+     capacity is a list of capacities: c1, c2, ...
+       The sum of w1 for selected items may not exceed c1
+       Similarly, sum of w2 for selected items may not exceed c2, ...
+
+     returns tuple of selected items and value with remaining capacity
+  '''
   selected = []
   # First item is value, rest is remaining capacity
   remaining = [0] + [c for c in capacity]
@@ -55,7 +69,7 @@ def solve_knapsack(items, capacity):
 
 
 def print_knapsack(sack):
-  return f'value = {sack[1][0]}, items = ' + str([i[0] for i in sack[0]])
+  return f'value = {sack[1][0]}, items = ' + str([s[0] for s in sack[0]])
 
 
 
@@ -83,16 +97,17 @@ if __name__ == '__main__':
 
 
   print(print_knapsack(solve_knapsack(
-    [('A', 2, 1, 20),
-     ('B', 2, 1, 25),
-     ('C', 3, 2, 30),
-     ('D', 2, 3, 35),
-     ('E', 5, 3, 40),
-     ('F', 6, 3, 40),
-     ('G', 2, 3, 45),
-     ('H', 5, 3, 45),
-     ('I', 7, 4, 50)],
-    (20, 245)
+    [('A', 10, 2, 512, 10),
+     ('B', 20, 4, 256, 15),
+     ('C', 30, 8, 128, 20),
+     ('D', 40, 16, 64, 25),
+     ('E', 50, 32, 32, 30),
+     ('F', 60, 64, 16, 35),
+     ('G', 70, 128, 8, 40),
+     ('H', 80, 140, 4, 45),
+     ('I', 90, 160, 2, 50),
+     ('J', 100, 180, 1, 55)],
+    (300, 300, 100)
     )))
 
 
