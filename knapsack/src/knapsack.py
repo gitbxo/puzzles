@@ -14,7 +14,7 @@ PRINT_STACK = False
 
 
 def check_fit(item, remaining):
-  for r in range(len(remaining)):
+  for r in range(len(item)):
     if item[r] > remaining[r]:
       return False
   return True
@@ -50,6 +50,10 @@ def solve_knapsack(items, capacity):
     if not selected:
       # if there is nothing selected, skip item
       continue
+    if min([t[1] for t in items if t[0] in selected]) >= sum(
+            [t[1] for t in items[i:]]):
+      # if min value of selected is more than remaining value, skip item
+      continue
 
     # Find max of first i items with reduced capacity
     too_big = False
@@ -76,6 +80,39 @@ def solve_knapsack(items, capacity):
   return (selected, remaining)
 
 
+def validate_and_solve_knapsack(items, capacity):
+  '''validate_and_solve_knapsack
+     validates parameters and calls solve_knapsack
+
+     items is a list of tuples containing: name, value, w1, w2, ...
+     capacity is a list of capacities: c1, c2, ...
+       The sum of w1 for selected items may not exceed c1
+       Similarly, sum of w2 for selected items may not exceed c2, ...
+
+     returns tuple of selected items and value with remaining capacity
+  '''
+  capacity_type = list(set([type(c).__name__ for c in capacity]))
+  if len(capacity_type) != 1 or capacity_type[0] != 'int':
+    return ([], ['all capacity must be int'])
+  if min(capacity) <= 0:
+    return ([], ['all capacity must be +ve'])
+
+  for item in items:
+    item_type = list(set([type(i).__name__ for i in item[1:]]))
+    if len(item_type) != 1 or item_type[0] != 'int':
+      return ([], ['all item values and weights must be int'])
+  if len(set([i[0] for i in items])) != len(items):
+    return ([], ['item names are not unique'])
+  if min([i[1] for i in items]) <= 0:
+    return ([], ['all item values must be > 0'])
+  if min([min(i[2:]) for i in items]) < 0:
+    return ([], ['all item weights must be >= 0'])
+
+  # Use greedy algorithm - sort by max value and then by least weight
+  sorted_items = sorted(items, key=lambda x : (-x[1], sum(x[2:])))
+  return solve_knapsack(sorted_items, capacity)
+
+
 def print_knapsack(sack):
   return f'value = {sack[1][0]}, items = ' + str(
     sorted(sack[0]))
@@ -85,15 +122,17 @@ if __name__ == '__main__':
   if '--print-stack' in sys.argv:
     PRINT_STACK = True
   
-  print(print_knapsack(solve_knapsack(
+  print(print_knapsack(validate_and_solve_knapsack(
+    [('A', 1, 1), ('A', 6, 2), ('C', 10, 3), ('D', 16, 5)], (7,))))
+  print(print_knapsack(validate_and_solve_knapsack(
     [('A', 1, 1), ('B', 6, 2), ('C', 10, 3), ('D', 16, 5)], (7,))))
-  print(print_knapsack(solve_knapsack(
+  print(print_knapsack(validate_and_solve_knapsack(
     [('A', 1, 1), ('B', 6, 2), ('C', 10, 3), ('D', 16, 5)], (6,))))
-  print(print_knapsack(solve_knapsack(
+  print(print_knapsack(validate_and_solve_knapsack(
     [('A', 1, 1, 3), ('B', 6, 2, 2), ('C', 10, 3, 5), ('D', 16, 5, 4)],
     (7, 7))))
 
-  print(print_knapsack(solve_knapsack(
+  print(print_knapsack(validate_and_solve_knapsack(
     [('A', 2, 1, 20),
      ('B', 2, 1, 25),
      ('C', 3, 2, 30),
@@ -106,7 +145,7 @@ if __name__ == '__main__':
     (20, 245)
     )))
 
-  print(print_knapsack(solve_knapsack(
+  print(print_knapsack(validate_and_solve_knapsack(
     [('A', 10, 2, 512, 10),
      ('B', 20, 4, 256, 15),
      ('C', 30, 8, 128, 20),
