@@ -34,7 +34,7 @@ def solve_knapsack(items, capacity):
       for r in range(len(capacity)):
         remaining[1 + r] -= items[i][2 + r]
       remaining[0] += items[i][1]
-      selected.append(items[i])
+      selected.append(items[i][0])
       continue
 
     # Does not fit
@@ -55,22 +55,21 @@ def solve_knapsack(items, capacity):
       continue
 
     new_selected, new_remaining = solve_knapsack(items[:i], new_capacity)
-    if new_remaining[0] + items[i][1] <= remaining[0]:
+    new_selected.append(items[i][0])
+    new_remaining[0] += items[i][1]
+    if new_remaining[0] <= remaining[0]:
       # there is no benefit to include item i
       continue
 
     remaining = new_remaining
-    remaining[0] += items[i][1]
-    selected = new_selected + [items[i]]
-
+    selected = new_selected
 
   return (selected, remaining)
 
 
-
 def print_knapsack(sack):
-  return f'value = {sack[1][0]}, items = ' + str([s[0] for s in sack[0]])
-
+  return f'value = {sack[1][0]}, items = ' + str(
+    sorted(sack[0]))
 
 
 if __name__ == '__main__':
@@ -79,7 +78,8 @@ if __name__ == '__main__':
   print(print_knapsack(solve_knapsack(
     [('A', 1, 1), ('B', 6, 2), ('C', 10, 3), ('D', 16, 5)], (6,))))
   print(print_knapsack(solve_knapsack(
-    [('A', 1, 1, 3), ('B', 6, 2, 2), ('C', 10, 3, 5), ('D', 16, 5, 4)], (7,7))))
+    [('A', 1, 1, 3), ('B', 6, 2, 2), ('C', 10, 3, 5), ('D', 16, 5, 4)],
+    (7, 7))))
 
   print(print_knapsack(solve_knapsack(
     [('A', 2, 1, 20),
@@ -93,8 +93,6 @@ if __name__ == '__main__':
      ('I', 7, 4, 50)],
     (20, 245)
     )))
-
-
 
   print(print_knapsack(solve_knapsack(
     [('A', 10, 2, 512, 10),
