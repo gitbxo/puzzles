@@ -7,9 +7,15 @@ To run, use the following command:
   python3 knapsack.py
 '''
 
+import sys
+
+
+PRINT_STACK = False
+
+
 def check_fit(item, remaining):
-  for r in range(1, len(remaining)):
-    if item[1 + r] > remaining[r]:
+  for r in range(len(remaining)):
+    if item[r] > remaining[r]:
       return False
   return True
 
@@ -24,11 +30,14 @@ def solve_knapsack(items, capacity):
 
      returns tuple of selected items and value with remaining capacity
   '''
+  if PRINT_STACK:
+    print(f'Called solve {[i[0] for i in items]} for {capacity}')
   selected = []
   # First item is value, rest is remaining capacity
   remaining = [0] + [c for c in capacity]
+
   for i in range(len(items)):
-    does_fit = check_fit(items[i], remaining)
+    does_fit = check_fit(items[i][2:], remaining[1:])
 
     if does_fit:
       for r in range(len(capacity)):
@@ -73,6 +82,9 @@ def print_knapsack(sack):
 
 
 if __name__ == '__main__':
+  if '--print-stack' in sys.argv:
+    PRINT_STACK = True
+  
   print(print_knapsack(solve_knapsack(
     [('A', 1, 1), ('B', 6, 2), ('C', 10, 3), ('D', 16, 5)], (7,))))
   print(print_knapsack(solve_knapsack(

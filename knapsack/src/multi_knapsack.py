@@ -10,12 +10,17 @@ To run, use the following command:
   python3 multi_knapsack.py
 '''
 
+import sys
+
+
+PRINT_STACK = False
+
 
 def check_fit(item, remaining):
   for i in range(len(remaining)):
     check = True
     for r in range(len(remaining[i])):
-      if item[2 + r] > remaining[i][r]:
+      if item[r] > remaining[i][r]:
         check = False
         break
     if check:
@@ -33,12 +38,14 @@ def solve_knapsack(items, capacity):
 
      returns tuple of selected items and value with remaining capacity
   '''
+  if PRINT_STACK:
+    print(f'Called solve {[i[0] for i in items]} for {capacity}')
   selected = []
   # First item is value, rest is remaining capacity
   remaining = [0] + [[c for c in k] for k in capacity]
 
   for i in range(len(items)):
-    first_fit = check_fit(items[i], remaining[1:])
+    first_fit = check_fit(items[i][2:], remaining[1:])
 
     if first_fit >= 0:
       for r in range(len(capacity[first_fit])):
@@ -53,7 +60,7 @@ def solve_knapsack(items, capacity):
       continue
 
     # Find max of first i items with reduced capacity
-    first_fit = check_fit(items[i], capacity)
+    first_fit = check_fit(items[i][2:], capacity)
     while first_fit >= 0:
       too_big = False
       new_capacity = [[c for c in k] for k in capacity]
@@ -67,7 +74,7 @@ def solve_knapsack(items, capacity):
         if first_fit + 1 >= len(capacity):
           # item i is too big, skip it
           break
-        next_fit = check_fit(items[i], capacity[first_fit+1:])
+        next_fit = check_fit(items[i][2:], capacity[first_fit+1:])
         if next_fit < 0:
           break
         first_fit += next_fit + 1
@@ -80,7 +87,7 @@ def solve_knapsack(items, capacity):
         if first_fit + 1 >= len(capacity):
           # there is no benefit to include item i
           break
-        next_fit = check_fit(items[i], capacity[first_fit+1:])
+        next_fit = check_fit(items[i][2:], capacity[first_fit+1:])
         if next_fit < 0:
           break
         first_fit += next_fit + 1
@@ -100,6 +107,9 @@ def print_knapsack(sack):
 
 
 if __name__ == '__main__':
+  if '--print-stack' in sys.argv:
+    PRINT_STACK = True
+  
   print(print_knapsack(solve_knapsack(
     [('A', 1, 1), ('B', 6, 2), ('C', 10, 3), ('D', 16, 5)], [(7,)])))
   print(print_knapsack(solve_knapsack(
