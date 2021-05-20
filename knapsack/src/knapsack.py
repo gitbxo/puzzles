@@ -5,6 +5,9 @@ This solves the multi-dimensional knapsack problem
 
 To run, use the following command:
   python3 knapsack.py
+
+The flag --print-stack will print the calls to solve_knapsack:
+  python3 knapsack.py --print-stack
 '''
 
 import sys
@@ -91,18 +94,23 @@ def validate_and_solve_knapsack(items, capacity):
 
      returns tuple of selected items and value with remaining capacity
   '''
+  if type(capacity).__name__ not in ['list', 'tuple']:
+    return ([], ['capacity must be a list of int'])
   capacity_type = list(set([type(c).__name__ for c in capacity]))
   if len(capacity_type) != 1 or capacity_type[0] != 'int':
-    return ([], ['all capacity must be int'])
+    return ([], ['capacity must be a list of int'])
+  num_weights = len(capacity)
+  if num_weights <= 0:
+    return ([], ['there must be at least one weight'])
   if min(capacity) <= 0:
-    return ([], ['all capacity must be +ve'])
+    return ([], ['all weights must be +ve'])
 
+  if len(set([i[0] for i in items])) != len(items):
+    return ([], ['item names are not unique'])
   for item in items:
     item_type = list(set([type(i).__name__ for i in item[1:]]))
     if len(item_type) != 1 or item_type[0] != 'int':
       return ([], ['all item values and weights must be int'])
-  if len(set([i[0] for i in items])) != len(items):
-    return ([], ['item names are not unique'])
   if min([i[1] for i in items]) <= 0:
     return ([], ['all item values must be > 0'])
   if min([min(i[2:]) for i in items]) < 0:
