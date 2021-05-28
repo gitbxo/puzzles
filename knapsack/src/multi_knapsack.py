@@ -79,10 +79,14 @@ def solve_knapsack(items, capacity):
     max_selected = []
     if first_fit >= 0:
       max_selected = [s for s in selected] + [(first_fit, item_i[0])]
-      max_remaining = [remaining[0]] + [[c for c in s] for s in remaining[1:]]
+      max_remaining = [remaining[0] + item_i[1]] + [
+        [c for c in s] for s in remaining[1:]]
       for r in range(len(capacity[first_fit])):
         max_remaining[first_fit + 1][r] -= item_i[2 + r]
-      max_remaining[0] += item_i[1]
+
+      remaining = max_remaining
+      selected = max_selected
+      continue
 
     # Find max of first i items with reduced capacity
     first_fit = check_fit(item_i[2:], capacity)
@@ -98,8 +102,20 @@ def solve_knapsack(items, capacity):
           too_big = True
           break
 
-      new_selected, new_remaining = ([], []) if too_big or i == 0 else (
-        solve_knapsack(items[:i], new_capacity))
+      new_selected, new_remaining = ([], [])
+      if not too_big:
+        if selected:
+          new_remaining = [remaining[0]] + [
+            [c for c in s] for s in remaining[1:]]
+          new_selected = [s for s in selected]
+          for r in range(len(capacity[first_fit])):
+            new_remaining[first_fit + 1][r] -= item_i[2 + r]
+            if 0 > new_remaining[first_fit + 1][r]:
+              new_selected = []
+
+        if not new_selected:
+          new_selected, new_remaining = solve_knapsack(items[:i], new_capacity)
+
       if too_big or len(new_remaining) < 1 + len(capacity):
         next_fit = -1 if first_fit + 1 >= len(capacity) else check_fit(
            item_i[2:], capacity[first_fit+1:])
@@ -116,6 +132,10 @@ def solve_knapsack(items, capacity):
       if not max_remaining or new_remaining[0] > max_remaining[0]:
         max_remaining = new_remaining
         max_selected = new_selected
+
+        # if value increased by item_i[1], we have maxed out
+        if new_remaining[0] >= remaining[0] + item_i[1]:
+          break
 
       next_fit = check_fit(item_i[2:], capacity[first_fit+1:])
       if PRINT_STACK:
