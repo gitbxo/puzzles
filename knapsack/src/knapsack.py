@@ -13,6 +13,7 @@ The flag --print-stack will print the calls to solve_knapsack:
 import sys
 
 
+PRINT_LOOP = False
 PRINT_STACK = False
 
 
@@ -40,6 +41,8 @@ def solve_knapsack(items, capacity):
   remaining = [0] + [c for c in capacity]
 
   for i in range(len(items)):
+    if PRINT_LOOP:
+      print(f'Called loop {i} for {items[i]} {[i[0] for i in items]} {selected}')
     does_fit = check_fit(items[i][2:], remaining[1:])
 
     if does_fit:
@@ -53,12 +56,10 @@ def solve_knapsack(items, capacity):
     if not selected:
       # if there is nothing selected, skip item
       continue
-    if min([t[1] for t in items if t[0] in selected]) >= sum(
-            [t[1] for t in items[i:]]):
-      # if min value of selected is more than remaining value, skip item
-      continue
 
     # Find max of first i items with reduced capacity
+    if PRINT_LOOP:
+      print(f'Checking {items[i]} against {selected}')
     too_big = False
     new_capacity = [0] * len(capacity)
     for c in range(len(capacity)):
@@ -80,6 +81,8 @@ def solve_knapsack(items, capacity):
     remaining = new_remaining
     selected = new_selected
 
+  if PRINT_STACK:
+      print(f'returning {selected} {remaining}')
   return (selected, remaining)
 
 
@@ -127,9 +130,13 @@ def print_knapsack(sack):
 
 
 if __name__ == '__main__':
+  if '--print-loop' in sys.argv:
+    PRINT_LOOP = True
   if '--print-stack' in sys.argv:
     PRINT_STACK = True
   
+  print(print_knapsack(validate_and_solve_knapsack(
+    [('A', 3, 3), ('B', 5, 5), ('C', 3, 3)], (6,))))
   print(print_knapsack(validate_and_solve_knapsack(
     [('A', 1, 1), ('A', 6, 2), ('C', 10, 3), ('D', 16, 5)], (7,))))
   print(print_knapsack(validate_and_solve_knapsack(
