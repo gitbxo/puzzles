@@ -72,14 +72,12 @@ def solve_knapsack(items, capacity):
       continue
 
     new_selected, new_remaining = solve_knapsack(items[:i], new_capacity)
-    new_selected.append(items[i][0])
-    new_remaining[0] += items[i][1]
-    if new_remaining[0] <= remaining[0]:
-      # there is no benefit to include item i
-      continue
-
-    remaining = new_remaining
-    selected = new_selected
+    if new_remaining[0] + items[i][1] > remaining[0]:
+      # including item i gives more value
+      new_selected.append(items[i][0])
+      new_remaining[0] += items[i][1]
+      remaining = new_remaining
+      selected = new_selected
 
   if PRINT_STACK:
       print(f'returning {selected} {remaining}')
