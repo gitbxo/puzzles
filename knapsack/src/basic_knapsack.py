@@ -17,15 +17,20 @@ PRINT_LOOP = False
 PRINT_STACK = False
 
 
-def find_replace_items(new_item, selected_items):
+def find_replace_items(new_item, selected_items, capacity):
   # Need to find items that can be replaced by new_item
   # sum values must be less than new_item
   # maximize weight removed to replace new_item
-  mod_items = [[s[0], s[2], s[1]] for s in selected_items]
-  replace_items, _ = solve_knapsack(mod_items, new_item[1] - 1)
-  return (
-    [s for s in selected_items if s[0] in replace_items]
-    if replace_items else [])
+  max_weight = capacity - new_item[2]
+  large_items = [s for s in selected_items if s[2] > max_weight]
+  max_value = new_item[1] - 1 - sum([s[1] for s in large_items])
+  if max_value <= 0:
+    return [] if max_value else large_items
+  mod_items = [[s[0], s[2], s[1]] for s in selected_items if s[2] <= max_weight]
+  if not mod_items:
+    return large_items
+  replace_items, _ = solve_knapsack(mod_items, max_value)
+  return large_items + [s for s in selected_items if s[0] in replace_items]
 
 
 def solve_knapsack(items, capacity):
@@ -90,7 +95,7 @@ def solve_knapsack(items, capacity):
       # Find items to replace
       if PRINT_LOOP:
         print(f'Checking {items[i]} against {selected}')
-      replace_items = find_replace_items(items[i], selected_items)
+      replace_items = find_replace_items(items[i], selected_items, capacity)
       replace_weight = sum([s[2] for s in replace_items])
       if replace_items and items[i][2] <= replace_weight + remaining[1]:
         replace = True
