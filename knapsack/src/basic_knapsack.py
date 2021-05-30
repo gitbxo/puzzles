@@ -20,7 +20,7 @@ PRINT_STACK = False
 def find_replace_items(new_item, selected_items):
   # Need to find items that can be replaced by new_item
   # sum values must be less than new_item
-  # sum weights must be more than new_item
+  # maximize weight removed to replace new_item
   mod_items = [[s[0], s[2], s[1]] for s in selected_items]
   replace_items, _ = solve_knapsack(mod_items, new_item[1] - 1)
   return (

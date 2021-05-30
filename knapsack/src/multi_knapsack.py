@@ -47,7 +47,9 @@ def solve_knapsack(items, capacity):
      returns tuple of selected items and value with remaining capacity
   '''
   if PRINT_STACK:
-    print(f'Called solve {[i[0] for i in items]} for {capacity}')
+    print(f'Called solve {[i[0] for i in items]} for ' + str(
+      capacity if len(capacity) > 1 else (
+          capacity[0] if len(capacity[0]) > 1 else capacity[0][0])))
   selected = []
   # First item is value, rest is remaining capacity
   remaining = [0] + [[c for c in k] for k in capacity]
@@ -163,7 +165,13 @@ def solve_knapsack(items, capacity):
       return ([], ['cannot fit items ' + cannot_fit_items])
 
   if PRINT_STACK:
-      print(f'returning {selected} {remaining}')
+      if len(capacity) > 1:
+        print(f'returning {selected} {remaining}')
+      else:
+        print_remaining = (
+          remaining if len(remaining) < 2
+          else [remaining[0]] + remaining[1])
+        print(f'returning {[s[1] for s in selected]} {print_remaining}')
   return (selected, remaining)
 
 
@@ -218,9 +226,12 @@ def validate_and_solve_knapsack(items, capacity):
 
 
 def print_knapsack(sack):
-  return f'value = {sack[1][0]}, items = ' + str(
+  print_items = (
     [(k, sorted([s[1] for s in sack[0] if s[0] == k]))
-         for k in range(len(sack[1])-1)])
+       for k in range(len(sack[1])-1)]
+      if len(sack[1]) > 2
+    else sorted([s[1] for s in sack[0]]))
+  return f'value = {sack[1][0]}, items = {print_items}'
 
 
 if __name__ == '__main__':

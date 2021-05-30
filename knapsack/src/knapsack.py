@@ -35,7 +35,8 @@ def solve_knapsack(items, capacity):
      returns tuple of selected items and value with remaining capacity
   '''
   if PRINT_STACK:
-    print(f'Called solve {[i[0] for i in items]} for {capacity}')
+    print(f'Called solve {[i[0] for i in items]} for ' + str(
+      capacity if len(capacity) > 1 else capacity[0]))
   selected = []
   # First item is value, rest is remaining capacity
   remaining = [0] + [c for c in capacity]
