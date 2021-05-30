@@ -41,6 +41,26 @@ def solve_knapsack(items, capacity):
   # First item is value, rest is remaining capacity
   remaining = [0] + [c for c in capacity]
 
+  if not capacity:
+    selected, remaining = ([], ['no capacity provided'])
+    if PRINT_STACK:
+      print(f'returning {selected} {remaining}')
+    return selected, remaining
+
+  if not items:
+    selected, remaining = ([], ['no items provided'])
+    if PRINT_STACK:
+      print(f'returning {selected} {remaining}')
+    return selected, remaining
+
+  # Exclude items that don't fit
+  items = [i for i in items if check_fit(i[2:], capacity)]
+  if not items:
+    selected, remaining = ([], ['no items fit'])
+    if PRINT_STACK:
+      print(f'returning {selected} {remaining}')
+    return selected, remaining
+
   for i in range(len(items)):
     if PRINT_LOOP:
       print(f'Called loop {i} for {items[i]} {[i[0] for i in items]} {selected}')
@@ -58,6 +78,10 @@ def solve_knapsack(items, capacity):
       # if there is nothing selected, skip item
       continue
 
+    if i == 1 and items[0][1] >= items[i][1]:
+      # Does not fit and selected item has higher value
+      continue
+
     # Find max of first i items with reduced capacity
     if PRINT_LOOP:
       print(f'Checking {items[i]} against {selected}')
@@ -73,7 +97,7 @@ def solve_knapsack(items, capacity):
       continue
 
     new_selected, new_remaining = solve_knapsack(items[:i], new_capacity)
-    if new_remaining[0] + items[i][1] > remaining[0]:
+    if new_selected and new_remaining[0] + items[i][1] > remaining[0]:
       # including item i gives more value
       new_selected.append(items[i][0])
       new_remaining[0] += items[i][1]
@@ -81,7 +105,7 @@ def solve_knapsack(items, capacity):
       selected = new_selected
 
   if PRINT_STACK:
-      print(f'returning {selected} {remaining}')
+    print(f'returning {selected} {remaining}')
   return (selected, remaining)
 
 
@@ -107,8 +131,14 @@ def validate_and_solve_knapsack(items, capacity):
   if min(capacity) <= 0:
     return ([], ['all weights must be +ve'])
 
+  if not items:
+    return ([], ['must have at least one item'])
   if len(set([i[0] for i in items])) != len(items):
     return ([], ['item names are not unique'])
+  item_length = [len(i) for i in items]
+  if (min(item_length) != num_weights + 2) or (
+        max(item_length) != num_weights + 2):
+    return ([], [f'items must have name, value and {num_weights} weights'])
   for item in items:
     item_type = list(set([type(i).__name__ for i in item[1:]]))
     if len(item_type) != 1 or item_type[0] != 'int':

@@ -55,6 +55,26 @@ def solve_knapsack(items, capacity):
   remaining = [0] + [[c for c in k] for k in capacity]
   lookup = {}
 
+  if not capacity:
+    selected, remaining = ([], ['no capacity provided'])
+    if PRINT_STACK:
+      print(f'returning {selected} {remaining}')
+    return selected, remaining
+
+  if not items:
+    selected, remaining = ([], ['no items provided'])
+    if PRINT_STACK:
+      print(f'returning {selected} {remaining}')
+    return selected, remaining
+
+  # Exclude items that don't fit
+  items = [i for i in items if check_fit(i[-len(capacity[0]):], capacity) >= 0]
+  if not items:
+    selected, remaining = ([], ['no items fit'])
+    if PRINT_STACK:
+      print(f'returning {selected} {remaining}')
+    return selected, remaining
+
   for i in range(len(items)):
     if PRINT_LOOP:
       print(f'Called loop {i} for {items[i]} {[i[0] for i in items]} {selected}')
@@ -75,6 +95,11 @@ def solve_knapsack(items, capacity):
         if PRINT_STACK:
           print(f'cannot fit items {[item_i[0]]} i {i} {first_fit}')
         return ([], ['cannot fit items ' + str([item_i[0]])])
+      continue
+
+    if first_fit < 0 and not required_i and (
+        i == 1 and items[0][1] >= items[i][1]):
+      # Does not fit and selected item has higher value
       continue
 
     max_remaining = []
@@ -165,13 +190,13 @@ def solve_knapsack(items, capacity):
       return ([], ['cannot fit items ' + cannot_fit_items])
 
   if PRINT_STACK:
-      if len(capacity) > 1:
-        print(f'returning {selected} {remaining}')
-      else:
-        print_remaining = (
-          remaining if len(remaining) < 2
-          else [remaining[0]] + remaining[1])
-        print(f'returning {[s[1] for s in selected]} {print_remaining}')
+    if len(capacity) > 1:
+      print(f'returning {selected} {remaining}')
+    else:
+      print_remaining = (
+        remaining if len(remaining) < 2
+        else [remaining[0]] + remaining[1])
+      print(f'returning {[s[1] for s in selected]} {print_remaining}')
   return (selected, remaining)
 
 
@@ -197,9 +222,7 @@ def validate_and_solve_knapsack(items, capacity):
   num_weights = len(capacity[0])
   if num_weights <= 0:
     return ([], ['there must be at least one weight'])
-  if min([len(c) for c in capacity]) != num_weights:
-    return ([], ['all capacity must have the same number of weights'])
-  if max([len(c) for c in capacity]) != num_weights:
+  if len(set([len(c) for c in capacity])) != 1:
     return ([], ['all capacity must have the same number of weights'])
 
   for cap in capacity:
@@ -209,15 +232,21 @@ def validate_and_solve_knapsack(items, capacity):
     if min(cap) <= 0:
       return ([], ['all weights must be +ve'])
 
+  if not items:
+    return ([], ['must have at least one item'])
   if len(set([i[0] for i in items])) != len(items):
     return ([], ['item names are not unique'])
+  item_length = [len(i) for i in items]
+  if (min(item_length) < num_weights + 2) or (
+      max(item_length) > num_weights + 3):
+    return ([], [f'items must have name, value and {num_weights} weights'])
   for item in items:
-    item_type = list(set([type(i).__name__ for i in item[-len(capacity[0])-1:]]))
+    item_type = list(set([type(i).__name__ for i in item[-num_weights-1:]]))
     if len(item_type) != 1 or item_type[0] != 'int':
       return ([], ['all item values and weights must be int'])
-    if item[-len(capacity[0])-1] <= 0:
+    if item[-num_weights-1] <= 0:
       return ([], ['all item values must be > 0'])
-    if min(item[-len(capacity[0]):]) < 0:
+    if min(item[-num_weights:]) < 0:
       return ([], ['all item weights must be >= 0'])
 
   # Use greedy algorithm - sort by max value and then by least weight
