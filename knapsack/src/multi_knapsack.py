@@ -270,6 +270,10 @@ if __name__ == '__main__':
     PRINT_STACK = True
 
   print(print_knapsack(validate_and_solve_knapsack(
+    [('A', 10, 10), ('B', 11, 11), ('C', 12, 12)], [(30,)])))
+  print(print_knapsack(validate_and_solve_knapsack(
+    [('A', 10, 10), ('B', 11, 11), ('C', 12, 12)], [(33,)])))
+  print(print_knapsack(validate_and_solve_knapsack(
     [('A', 3, 3), ('B', 5, 5), ('C', 3, 3)], [(6,)])))
   print(print_knapsack(validate_and_solve_knapsack(
     [('A', 1, 1), ('B', 6, 2), ('C', 10, 3), ('D', 16, 5)], [(7,)])))

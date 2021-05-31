@@ -63,7 +63,7 @@ def solve_knapsack(items, capacity):
 
   for i in range(len(items)):
     if PRINT_LOOP:
-      print(f'Called loop {i} for {items[i]} {[i[0] for i in items]} {selected}')
+      print(f'Called loop {i} for {items[i]} {[j[0] for j in items]} {selected}')
     does_fit = check_fit(items[i][2:], remaining[1:])
 
     if does_fit:
@@ -96,13 +96,29 @@ def solve_knapsack(items, capacity):
     if too_big:
       continue
 
-    new_selected, new_remaining = solve_knapsack(items[:i], new_capacity)
+    new_selected, new_remaining = ([], [])
+    new_items = [j for j in items[:i] if check_fit(j[2:], new_capacity)]
+    max_value = sum([j[1] for j in [items[i]] + new_items])
+    if max_value <= remaining[0]:
+      # including item i will not give more value
+      continue
+    elif len(new_items) == 1:
+      new_selected = [new_items[0][0]]
+      new_remaining = [new_items[0][1]] + [
+        new_capacity[c] - new_items[0][2 + c]
+        for c in range(len(new_capacity))]
+    elif new_items:
+      new_selected, new_remaining = solve_knapsack(new_items, new_capacity)
+
     if new_selected and new_remaining[0] + items[i][1] > remaining[0]:
       # including item i gives more value
-      new_selected.append(items[i][0])
       new_remaining[0] += items[i][1]
       remaining = new_remaining
-      selected = new_selected
+      selected = new_selected + [items[i][0]]
+    elif items[i][1] > remaining[0]:
+      # including item i gives more value
+      remaining = [items[i][1]] + new_capacity
+      selected = [items[i][0]]
 
   if PRINT_STACK:
     print(f'returning {selected} {remaining}')
@@ -166,6 +182,10 @@ if __name__ == '__main__':
 
   print(print_knapsack(validate_and_solve_knapsack(
     [('A', 1, 1), ('A', 6, 2), ('C', 10, 3), ('D', 16, 5)], (7,))))
+  print(print_knapsack(validate_and_solve_knapsack(
+    [('A', 10, 10), ('B', 11, 11), ('C', 12, 12)], (30,))))
+  print(print_knapsack(validate_and_solve_knapsack(
+    [('A', 10, 10), ('B', 11, 11), ('C', 12, 12)], (33,))))
   print(print_knapsack(validate_and_solve_knapsack(
     [('A', 3, 3), ('B', 5, 5), ('C', 3, 3)], (6,))))
   print(print_knapsack(validate_and_solve_knapsack(

@@ -26,9 +26,10 @@ def find_replace_items(new_item, selected_items, capacity):
   max_value = new_item[1] - 1 - sum([s[1] for s in large_items])
   if max_value <= 0:
     return [] if max_value else large_items
-  mod_items = [[s[0], s[2], s[1]] for s in selected_items if s[2] <= max_weight]
-  if not mod_items:
-    return large_items
+  mod_items = [[s[0], s[2], s[1]] for s in selected_items
+                 if s[2] <= max_weight and s[1] <= max_value]
+  if len(mod_items) <= 1:
+    return large_items + [[s[0], s[2], s[1]] for s in mod_items]
   replace_items, _ = solve_knapsack(mod_items, max_value)
   return large_items + [s for s in selected_items if s[0] in replace_items]
 
@@ -160,6 +161,10 @@ if __name__ == '__main__':
 
   print(print_knapsack(validate_and_solve_knapsack(
     [('A', 1, 1), ('A', 6, 2), ('C', 10, 3), ('D', 16, 5)], 7)))
+  print(print_knapsack(validate_and_solve_knapsack(
+    [('A', 10, 10), ('B', 11, 11), ('C', 12, 12)], 30)))
+  print(print_knapsack(validate_and_solve_knapsack(
+    [('A', 10, 10), ('B', 11, 11), ('C', 12, 12)], 33)))
   print(print_knapsack(validate_and_solve_knapsack(
     [('A', 3, 3), ('B', 5, 5), ('C', 3, 3)], 6)))
   print(print_knapsack(validate_and_solve_knapsack(
