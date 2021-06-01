@@ -274,6 +274,10 @@ if __name__ == '__main__':
   print(print_knapsack(validate_and_solve_knapsack(
     [('A', 10, 10), ('B', 11, 11), ('C', 12, 12)], [(33,)])))
   print(print_knapsack(validate_and_solve_knapsack(
+    [('A', 20, 15), ('B', 13, 8), ('C', 11, 8), ('D', 5, 5)], [(20,)])))
+  print(print_knapsack(validate_and_solve_knapsack(
+    [('A', 11, 8), ('B', 13, 8), ('C', 20, 15), ('D', 5, 5)], [(20,)])))
+  print(print_knapsack(validate_and_solve_knapsack(
     [('A', 3, 3), ('B', 5, 5), ('C', 3, 3)], [(6,)])))
   print(print_knapsack(validate_and_solve_knapsack(
     [('A', 1, 1), ('B', 6, 2), ('C', 10, 3), ('D', 16, 5)], [(7,)])))
